@@ -57,6 +57,8 @@ namespace simplexe
             }
             return true;
         }
+
+        // Elimination de ligne pour former une nouvelle matrice
         public static List<List<double>> EliminateRow(List<List<double>> matrice,int baseCol,int baseLigne)
         {
             var _matrice = matrice;

@@ -245,6 +245,11 @@ namespace simplexe
             this.printZ();
             this.printContrainte();
 
+            for(int i = 0;i<this.baseIndex.Count;i++)
+            {
+                Console.WriteLine("X[" + (this.baseIndex[i] + 1) + "] = " + this.matrice[this.baseIndex[i] + 1][this.nbVariable - 1]);
+            }
+
         }
     }
 }
