@@ -12,6 +12,7 @@ namespace simplexe
         public int nbContrainte { get; set; }
         public List<int> baseIndex { get; set; }
 
+        private int choice = 0;
         public string[] signeContrainte { get; set; }
 
         public Matrice()
@@ -21,11 +22,23 @@ namespace simplexe
 
         public void init()
         {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            Console.WriteLine("Supposons que les variables X1,x2,....,XN sont tous POSITIFS pour l'application");
+            Console.WriteLine("++++++++++++ET ON NE LES PRECISERA PLUS DANS LE CONTRAINTE :P :P :P++++++++++++");
+            Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            Console.ResetColor();
             this.initNbVariable();
             this.initNbContrainte();
             this.initMatriceRange();
             this.initZ();
             this.initContrainte();
+            if(Array.Exists(this.signeContrainte,e => e == "="))
+            {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("DESOLE, ne peut pas etre resolu pour le moment car besoin d'une base inversible :(");
+                return;
+            }
             // Affichage de la matrice et des contraintes
             this.printZ();
             this.printContrainte();
@@ -33,6 +46,7 @@ namespace simplexe
             this.printBaseIndex();
             this.DoSimplexe();
         }
+
 
 
         // Initialisation du nombre de contrainte
@@ -68,11 +82,26 @@ namespace simplexe
 
         public void initZ()
         {
-            Console.WriteLine("Insertion de z a minimiser : ");
+            List<int> choices = new List<int>(){ 1, 2 };
+            // Choix entre maximiser ou minimiser
+            while(!choices.Contains(this.choice))
+            {
+                Console.Write("Choisir entre minimiser ou maximiser : 1-Minimiser 2-Maximiser ==> ");
+                this.choice = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Choix :" + this.choice);
+            }
+
+            Console.WriteLine("Insertion de z a "+ (this.choice == 1 ? "Minimiser" : "Maximiser") +" : ");
+            // Insertion de Z a la ligne 0 de la matrice
             for(int i = 0;i<this.nbVariable - 1;i++)
             {
                 Console.Write("Entrer x[" + i + "] : ");
-                this.matrice[0].Add(Convert.ToDouble(Console.ReadLine()));
+                double z_temp = Convert.ToDouble(Console.ReadLine());
+                if(this.choice == 2)
+                {
+                    z_temp = z_temp * -1;
+                }
+                this.matrice[0].Add(z_temp);
             }
         }
 
@@ -101,6 +130,15 @@ namespace simplexe
             }
         }
 
+        public void multiplyRowPerNegatif(int index)
+        {
+            for(int i =0;i<this.nbVariable;i++)
+            {
+                this.matrice[index][i] = this.matrice[index][i] * -1;
+            }
+        }
+
+        // Insertion des contraintes dans la matrice
         public void initContrainte()
         {
 
@@ -112,10 +150,18 @@ namespace simplexe
                     if (j == (this.nbVariable - 1))
                     {
                         Console.Write("Choisir le signe entre 0: > , 1: >= ,2: <, 3:<= ,4= :");
+                        
                         this.signeContrainte[i - 1] = this.getSigne(Convert.ToInt32(Console.ReadLine()));
+                    
 
                         Console.Write("Entrer la valeur de b[" + (i + 1) + "] = ");
                         this.matrice[i].Add(Convert.ToDouble(Console.ReadLine()));
+                        if (this.signeContrainte[i - 1] == ">" || this.signeContrainte[i - 1] == ">=")
+                        {
+                            // Si signe > || >= multiplier par -1 et changer la signe a <= :)
+                            this.multiplyRowPerNegatif(i);
+                            this.signeContrainte[i - 1] = "<=";
+                        }
                         break;
                     }
 
@@ -241,7 +287,9 @@ namespace simplexe
                 // Console.WriteLine("Base ligne :" + baseLigne + " Base colonne : " + baseCol);
                 this.matrice = Utility.EliminateRow(this.matrice, entreDansLaBase, baseLigne + 1);
             }
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("=============================RESULTAT==============================");
+            Console.ResetColor();
             this.printZ();
             this.printContrainte();
 
