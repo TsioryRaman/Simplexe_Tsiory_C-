@@ -22,6 +22,12 @@ namespace simplexe
 
         public void init()
         {
+
+            Console.WriteLine("===============================================================================");
+            Console.WriteLine("==============================GROUPE ROCCO MSI 5===============================");
+            Console.WriteLine("=================TSIORY SITRAKA TOKY MAHERY DIDI TAHIANA=======================");
+            Console.WriteLine("===============================================================================");
+            Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             Console.WriteLine("Supposons que les variables X1,x2,....,XN sont tous POSITIFS pour l'application");
